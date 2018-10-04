@@ -28,6 +28,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import static com.dieam.reactnativepushnotification.modules.RNPushNotification.LOG_TAG;
 import static com.dieam.reactnativepushnotification.modules.RNPushNotificationAttributes.fromJson;
@@ -429,6 +432,28 @@ public class RNPushNotificationHelper {
             switch (repeatType) {
                 case "time":
                     newFireDate = fireDate + repeatTime;
+                    break;
+                case "month":
+                    final Calendar c = new GregorianCalendar();
+                    c.setTime(new Date(fireDate));
+                    final Calendar now = Calendar.getInstance();
+                    final int currentMonth = now.get(Calendar.MONTH);
+                    int nextMonth = currentMonth + 1 > 11 ? 0 : currentMonth + 1;
+                    now.set(Calendar.YEAR, now.get(Calendar.YEAR + nextMonth == 0 ? 1 : 0));
+                    now.set(Calendar.MONTH, nextMonth);
+                    final int maxDay = now.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    final int fireDay = c.get(Calendar.DAY_OF_MONTH);
+                    now.set(Calendar.DAY_OF_MONTH, fireDay <= maxDay ? fireDay : maxDay);
+                    now.set(Calendar.MINUTE, c.get(Calendar.MINUTE));
+                    now.set(Calendar.HOUR, c.get(Calendar.HOUR));
+//                    now.set(
+//                            now.get(Calendar.YEAR) + nextMonth == 0 ? 1 : 0,
+//                            nextMonth,
+//
+//                    );
+//                    if (nextMonth == 0) {
+//                        now.set
+//                    }
                     break;
                 case "week":
                     newFireDate = fireDate + 7 * ONE_DAY;
